@@ -17,11 +17,15 @@
     </header>
 
     <section id="home" class="view active">
-      <div class="cards" id="groupCards"></div>
-      <div class="summary">
-        <span class="count" id="total">0</span>
-        <span> IPs contabilizadas</span>
+      <div class="homeControls">
+        <div class="summaryBox"><b id="total">0</b><span> IPs</span></div>
+        <div class="summaryBox onlineBox"><b id="onlineTotal">0</b><span> ONLINE</span></div>
+        <div class="summaryBox offlineBox"><b id="offlineTotal">0</b><span> OFFLINE</span></div>
+        <div class="lastCheck" id="lastCheck">Último chequeo: —</div>
+        <button class="smallAction" id="onlyProblemsBtn">🔴 SOLO PROBLEMAS</button>
+        <button class="smallAction rfidAction" id="rfidPageBtn">RFIDPAGE</button>
       </div>
+      <div class="cards" id="groupCards"></div>
     </section>
 
     <section id="listView" class="view">
