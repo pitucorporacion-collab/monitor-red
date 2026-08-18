@@ -96,8 +96,8 @@ function renderTable(group, statuses){
     let statusHtml='<span class="status"><span class="dot unknown"></span>COMPROBANDO</span>';
     if(state){
       statusHtml=state.online
-        ? `<span class="status online"><span class="dot"></span>ONLINE</span>`
-        : '<span class="status offline"><span class="dot"></span>OFFLINE</span>';
+        ? `<span class="status online"><span class="dot"></span>ONLINE · ${state.latency != null ? state.latency + ' ms' : '—'}</span>`
+        : `<span class="status offline"><span class="dot"></span>OFFLINE${state.latency != null ? ' · ' + state.latency + ' ms' : ''}</span>`;
     }
     tr.innerHTML=`<td class="ip">${device.ip}</td><td>${device.name || '<span class="muted">Sin nombre</span>'}</td><td>${device.location || '<span class="muted">—</span>'}</td><td>${statusHtml}</td>`;
     table.appendChild(tr);
@@ -137,6 +137,7 @@ async function checkAll(){
 }
 
 async function checkGroup(group){
+  if(!DEVICES[group]) return;
   setCardStatus(group,'checking');
   try {
     const response = await fetch(`http://127.0.0.1:3000/api/group/${encodeURIComponent(group)}`);
@@ -150,6 +151,8 @@ async function checkGroup(group){
     });
     setCardStatus(group, hasError ? 'offline' : 'online');
     updateTotals();
+    lastCheckAt = new Date();
+    updateLastCheck();
     if(listView.classList.contains('active') && title.textContent === group) renderTable(group,statusCache[group]);
   } catch(e) {
     setCardStatus(group,'offline');
@@ -175,4 +178,4 @@ setInterval(tick,1000);
 renderHome();
 updateLastCheck();
 checkAll();
-setInterval(checkAll,60000);
+setInterval(checkAll,180000);
