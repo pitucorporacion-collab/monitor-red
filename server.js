@@ -8,8 +8,10 @@ const PORT = 3000;
 const dataPath = path.join(__dirname, 'data.js');
 
 function loadData() {
-  const source = fs.readFileSync(dataPath, 'utf8');
-  return vm.runInNewContext(`${source}\n;({ GROUPS, NAMES })`);
+  const source = fs.readFileSync(dataPath, 'utf8') + '\nmodule.exports = DEVICES;';
+  const sandbox = { module: { exports: {} } };
+  vm.runInNewContext(source, sandbox);
+  return sandbox.module.exports;
 }
 
 function ping(ip) {
@@ -28,18 +30,11 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
-  if (req.url === '/api/devices') {
+  if (req.url.startsWith('/api/group/')) {
     try {
-      const { GROUPS, NAMES } = loadData();
-      const result = {};
-      for (const [group, ips] of Object.entries(GROUPS)) {
-        result[group] = await Promise.all(ips.map(async (ip) => ({
-          ip,
-          name: NAMES[ip] || '',
-          group,
-          ...(await ping(ip))
-        })));
-      }
+      const group = decodeURIComponent(req.url.substring('/api/group/'.length));
+      const devices = loadData()[group] || [];
+      const result = await Promise.all(devices.map(async (device) => ({ ...device, ...(await ping(device.ip)) })));
       res.writeHead(200);
       res.end(JSON.stringify(result));
     } catch (e) {
@@ -56,3 +51,5 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`Monitor Red activo en http://127.0.0.1:${PORT}`);
 });
+
+module.exports = server;
