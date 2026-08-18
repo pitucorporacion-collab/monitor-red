@@ -6,7 +6,7 @@
   "main": "main.js",
   "scripts": {
     "start": "node server.js",
-    "build:win": "electron-builder --win --x64"
+    "build:win": "electron-builder --win --x64 --publish never"
   },
   "devDependencies": {
     "electron": "^37.2.6",
@@ -16,6 +16,7 @@
     "appId": "com.pitu.monitorred",
     "productName": "Monitor Red",
     "files": ["main.js", "server.js", "index.html", "styles.css", "app.js", "data.js", "data.json", "package.json"],
-    "win": { "target": "nsis", "artifactName": "Monitor-Red-${version}-Setup.exe" }
+    "win": { "target": "nsis", "artifactName": "Monitor-Red-${version}-Setup.exe" },
+    "publish": null
   }
 }
