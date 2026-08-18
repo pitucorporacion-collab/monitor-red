@@ -26,26 +26,43 @@ function ping(ip) {
   });
 }
 
+async function checkGroups(groups) {
+  const result = {};
+  for (const [group, devices] of Object.entries(groups)) {
+    result[group] = await Promise.all(devices.map(async (device) => ({ ...device, ...(await ping(device.ip)) })));
+  }
+  return result;
+}
+
 const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
-  if (req.url.startsWith('/api/group/')) {
-    try {
+  try {
+    const groups = loadData();
+
+    if (req.url === '/api/all') {
+      const result = await checkGroups(groups);
+      res.writeHead(200);
+      res.end(JSON.stringify(result));
+      return;
+    }
+
+    if (req.url.startsWith('/api/group/')) {
       const group = decodeURIComponent(req.url.substring('/api/group/'.length));
-      const devices = loadData()[group] || [];
+      const devices = groups[group] || [];
       const result = await Promise.all(devices.map(async (device) => ({ ...device, ...(await ping(device.ip)) })));
       res.writeHead(200);
       res.end(JSON.stringify(result));
-    } catch (e) {
-      res.writeHead(500);
-      res.end(JSON.stringify({ error: e.message }));
+      return;
     }
-    return;
-  }
 
-  res.writeHead(404);
-  res.end(JSON.stringify({ error: 'Ruta no encontrada' }));
+    res.writeHead(404);
+    res.end(JSON.stringify({ error: 'Ruta no encontrada' }));
+  } catch (e) {
+    res.writeHead(500);
+    res.end(JSON.stringify({ error: e.message }));
+  }
 });
 
 server.listen(PORT, '127.0.0.1', () => {
