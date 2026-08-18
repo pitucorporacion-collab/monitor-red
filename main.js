@@ -23,33 +23,41 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     }
   });
-
   win.loadFile(path.join(__dirname, 'index.html'));
 }
 
-function typeText(webContents, text) {
-  for (const char of text) {
-    webContents.sendInputEvent({ type: 'char', keyCode: char });
-  }
-}
-
-function pressTab(webContents) {
-  webContents.sendInputEvent({ type: 'keyDown', keyCode: 'TAB' });
-  webContents.sendInputEvent({ type: 'keyUp', keyCode: 'TAB' });
-}
-
-function autoLoginRfid(win) {
-  setTimeout(() => {
+async function autoLoginRfid(win) {
+  setTimeout(async () => {
     if (!win || win.isDestroyed()) return;
-    win.focus();
-    // El sitio debe tener el primer campo de login enfocado para esta secuencia.
-    typeText(win.webContents, 'RV');
-    pressTab(win.webContents);
-    typeText(win.webContents, 'hhhigarcia');
-    pressTab(win.webContents);
-    typeText(win.webContents, '123123');
-    win.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ENTER' });
-    win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'ENTER' });
+    try {
+      await win.webContents.executeJavaScript(`(() => {
+        const inputs = [...document.querySelectorAll('input')].filter(el => {
+          const r = el.getBoundingClientRect();
+          return r.width > 0 && r.height > 0 && !el.disabled;
+        });
+        if (inputs.length) inputs[0].focus();
+        return inputs.length;
+      })()`);
+
+      win.focus();
+      const typeText = (text) => {
+        for (const char of text) win.webContents.sendInputEvent({ type: 'char', keyCode: char });
+      };
+      const pressTab = () => {
+        win.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'TAB' });
+        win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'TAB' });
+      };
+
+      typeText('RV');
+      pressTab();
+      typeText('hhhigarcia');
+      pressTab();
+      typeText('123123');
+      win.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ENTER' });
+      win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'ENTER' });
+    } catch (e) {
+      console.log('Login RFID automático no pudo completarse:', e.message);
+    }
   }, 1800);
 }
 
