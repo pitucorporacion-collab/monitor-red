@@ -64,14 +64,36 @@ async function autoLoginRfid(win) {
     };
 
     // Secuencia solicitada: RV -> esperar 1 s -> TAB -> esperar 1 s -> TAB -> 123123 -> ENTER
-    await typeText('RV');
-    await wait(1000);
-    await pressTab();
-    await wait(1000);
-    await pressTab();
-    await typeText('123123');
-    await wait(250);
-    await pressEnter();
+    // Limpiar lo que haya quedado escrito anteriormente
+for (let i = 0; i < 6; i++) {
+  await pressBackspace();
+  await wait(150);
+}
+
+await wait(1000);
+
+// Usuario
+await typeText('RV');
+await wait(1000);
+
+// Pasar al siguiente campo
+await pressTab();
+await wait(1000);
+
+// Segundo dato
+await typeText('hhhigarcia');
+await wait(1000);
+
+// Pasar al siguiente campo
+await pressTab();
+await wait(1000);
+
+// Contraseña
+await typeText('123123');
+await wait(1000);
+
+// Ingresar
+await pressEnter();
   } catch (e) {
     console.log('Login RFID automático no pudo completarse:', e.message);
   }
