@@ -1,6 +1,6 @@
 {
   "name": "monitor-red",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "description": "Monitor local de dispositivos de red RVF Rio Grande",
   "main": "main.js",
@@ -18,14 +18,8 @@
     "files": ["main.js", "preload.js", "server.js", "index.html", "styles.css", "app.js", "data.js", "data.json", "package.json"],
     "win": {
       "target": [
-        { "target": "nsis", "arch": ["x64"] },
         { "target": "portable", "arch": ["x64"] }
       ]
-    },
-    "nsis": {
-      "artifactName": "Monitor-Red-${version}-Setup.exe",
-      "oneClick": true,
-      "perMachine": false
     },
     "portable": {
       "artifactName": "Monitor-Red-${version}-Portable.exe"
