@@ -26,39 +26,55 @@ function createWindow() {
   win.loadFile(path.join(__dirname, 'index.html'));
 }
 
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function autoLoginRfid(win) {
-  setTimeout(async () => {
-    if (!win || win.isDestroyed()) return;
-    try {
-      await win.webContents.executeJavaScript(`(() => {
-        const inputs = [...document.querySelectorAll('input')].filter(el => {
-          const r = el.getBoundingClientRect();
-          return r.width > 0 && r.height > 0 && !el.disabled;
-        });
-        if (inputs.length) inputs[0].focus();
-        return inputs.length;
-      })()`);
+  await wait(1800);
+  if (!win || win.isDestroyed()) return;
 
-      win.focus();
-      const typeText = (text) => {
-        for (const char of text) win.webContents.sendInputEvent({ type: 'char', keyCode: char });
-      };
-      const pressTab = () => {
-        win.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'TAB' });
-        win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'TAB' });
-      };
+  try {
+    await win.webContents.executeJavaScript(`(() => {
+      const inputs = [...document.querySelectorAll('input')].filter(el => {
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && !el.disabled;
+      });
+      if (inputs.length) inputs[0].focus();
+      return inputs.length;
+    })()`);
 
-      typeText('RV');
-      pressTab();
-      typeText('hhhigarcia');
-      pressTab();
-      typeText('123123');
+    win.focus();
+
+    const typeText = async (text) => {
+      for (const char of text) {
+        win.webContents.sendInputEvent({ type: 'char', keyCode: char });
+        await wait(35);
+      }
+    };
+
+    const pressTab = async () => {
+      win.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'TAB' });
+      win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'TAB' });
+    };
+
+    const pressEnter = async () => {
       win.webContents.sendInputEvent({ type: 'keyDown', keyCode: 'ENTER' });
       win.webContents.sendInputEvent({ type: 'keyUp', keyCode: 'ENTER' });
-    } catch (e) {
-      console.log('Login RFID automático no pudo completarse:', e.message);
-    }
-  }, 1800);
+    };
+
+    // Secuencia solicitada: RV -> esperar 1 s -> TAB -> esperar 1 s -> TAB -> 123123 -> ENTER
+    await typeText('RV');
+    await wait(1000);
+    await pressTab();
+    await wait(1000);
+    await pressTab();
+    await typeText('123123');
+    await wait(250);
+    await pressEnter();
+  } catch (e) {
+    console.log('Login RFID automático no pudo completarse:', e.message);
+  }
 }
 
 function openRfidPages() {
@@ -73,7 +89,7 @@ function openRfidPages() {
       webPreferences: { contextIsolation: true }
     });
     rfidReportWindow.loadURL(RFID_REPORT_URL);
-    rfidReportWindow.webContents.on('did-finish-load', () => autoLoginRfid(rfidReportWindow));
+    rfidReportWindow.webContents.once('did-finish-load', () => autoLoginRfid(rfidReportWindow));
     rfidReportWindow.on('closed', () => { rfidReportWindow = null; });
   }
 
