@@ -1,4 +1,4 @@
-name: Construir Monitor Red para Windows
+name: Construir Monitor Red Portable para Windows
 
 on:
   workflow_dispatch:
@@ -17,11 +17,11 @@ jobs:
           node-version: 22
       - name: Instalar dependencias
         run: npm install
-      - name: Construir EXE
+      - name: Construir portable
         run: npm run build:win
-      - name: Guardar EXE
+      - name: Guardar solo Portable EXE
         uses: actions/upload-artifact@v4
         with:
-          name: Monitor-Red-Windows
-          path: dist/*.exe
+          name: Monitor-Red-Portable
+          path: dist/Monitor-Red-*-Portable.exe
           if-no-files-found: error
