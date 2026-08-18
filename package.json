@@ -1,0 +1,10 @@
+{
+  "name": "monitor-red",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monitor local de dispositivos de red",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
