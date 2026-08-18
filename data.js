@@ -12,11 +12,19 @@ const LEXMARK = ['10.3.8.78','10.3.8.79','10.3.8.69','10.3.8.71','10.3.8.68','10
 
 const SW = ['172.25.4.42','172.25.4.48','172.25.4.50','172.25.4.53','172.25.4.54','172.25.4.58','172.25.4.59','172.25.4.60','172.25.4.62','172.25.4.65','172.25.4.67','172.25.4.69','172.25.4.71','172.25.4.72','172.25.4.74','172.25.4.75','172.25.4.76','172.25.4.77','172.25.4.78','172.25.4.81','172.25.4.84','172.25.4.85','172.25.4.86','172.25.4.87','172.25.4.90','172.25.4.91','172.25.4.92','172.25.4.93','172.25.4.94','172.25.4.96','172.25.4.97','172.25.4.98','172.25.4.99','172.25.4.100','172.25.4.101','172.25.4.102','172.25.4.105','172.25.4.109','172.25.4.113','172.25.4.114'];
 
-const GROUPS = { APS, SW, CAM, RFID, LEXMARK, MPC: [], SATO: [] };
+// Las ocho direcciones 103.101.230-237 fueron interpretadas como 10.3.101.230-237, ya que una IPv4 requiere cuatro octetos.
+const SATO = ['10.3.101.230','10.3.101.231','10.3.101.232','10.3.101.233','10.3.101.234','10.3.101.235','10.3.101.236','10.3.101.237','10.3.8.76','10.3.8.82','10.3.8.81','10.3.8.84','10.3.8.83'];
+
+const GROUPS = { APS, SW, CAM, RFID, MPC: [], SATO, LEXMARK };
 
 const NAMES = {
-  '172.25.4.172':'Deposito Sontec','172.25.4.173':'Deposito Megasat','172.25.4.174':'Automatica','172.25.4.175':'Admin','172.25.4.124':'Dep. Zona 3','172.25.4.192':'Electronica pasillo','172.25.4.193':'Electronica pared','172.25.4.194':'Caños','172.25.4.195':'AP dep sistemas','172.25.4.196':'AP dep nuevo fondo','172.25.4.197':'Aire Supervisores','172.25.4.123':'Deposito Expedición','172.25.4.199':'Deposito RVF','172.25.4.200':'Deposito Nacionales','172.25.4.201':'AP Automatica fondo','172.25.4.202':'AP dep Automatica','172.25.4.212':'Sala de NVRs','172.25.4.213':'Nave elect MYT','172.25.4.214':'Comedor','172.25.4.215':'AP Nave B dep Megasat','172.25.4.216':'AP Nave Aire','172.25.4.217':'Deposito Sontec','172.25.4.218':'AP nuevo','172.25.4.198':'AP Mantenimiento','172.25.4.191':'AP Nuevo x tv1','172.25.4.177':'AP AIRE 1','172.25.4.176':'AP Nuevo x Tv4','172.25.4.178':'AP Calidad'
+  '172.25.4.172':'Deposito Sontec','172.25.4.173':'Deposito Megasat','172.25.4.174':'Automatica','172.25.4.175':'Admin','172.25.4.124':'Dep. Zona 3','172.25.4.192':'Electronica pasillo','172.25.4.193':'Electronica pared','172.25.4.194':'Caños','172.25.4.195':'AP dep sistemas','172.25.4.196':'AP dep nuevo fondo','172.25.4.197':'Aire Supervisores','172.25.4.123':'Deposito Expedición','172.25.4.199':'Deposito RVF','172.25.4.200':'Deposito Nacionales','172.25.4.201':'AP Automatica fondo','172.25.4.202':'AP dep Automatica','172.25.4.212':'Sala de NVRs','172.25.4.213':'Nave elect MYT','172.25.4.214':'Comedor','172.25.4.215':'AP Nave B dep Megasat','172.25.4.216':'AP Nave Aire','172.25.4.217':'Deposito Sontec','172.25.4.218':'AP nuevo','172.25.4.198':'AP Mantenimiento','172.25.4.191':'AP Nuevo x tv1','172.25.4.177':'AP AIRE 1','172.25.4.176':'AP Nuevo x Tv4','172.25.4.178':'AP Calidad',
+  '10.3.101.230':'Celulares Linea 1 PCBA','10.3.101.231':'Celulares Linea 1 IMEI','10.3.101.232':'Celulares Linea 1 Cubox','10.3.101.233':'Celulares Linea 1 Mbox','10.3.101.234':'Celulares Linea 2 PCBA','10.3.101.235':'Celulares Linea 2 IMEI','10.3.101.236':'Celulares Linea 2 Cubox','10.3.101.237':'Celulares Linea 2 Mbox','10.3.8.76':'Dep Zungri Cel RFID','10.3.8.82':'Dep Zungri Aire RFID','10.3.8.81':'Dep Zungri TV RFID','10.3.8.84':'Oficina Zungri (etiquetas)','10.3.8.83':'Programacion IA'
 };
 
-function makeDevices(list, group){ return list.map(ip => ({ip, name:NAMES[ip] || '', location:'', group})); }
+const LOCATIONS = {
+  '10.3.101.230':'CL4NX · CEL1 · FB100091','10.3.101.231':'CL4NX · CEL1 · JYD52636','10.3.101.232':'CL4NX plus · CEL1 · CM103459','10.3.101.233':'CL4NX plus RFID · CEL1 · CM103419','10.3.101.234':'CL4NX · CEL2 · 4G033105','10.3.101.235':'CL4NX plus RFID · CEL2 · GC103768','10.3.101.236':'CL4NX · CEL2 · 4H031397','10.3.101.237':'CL4NX · CEL2 · LTNX3504','10.3.8.76':'CL4NX plus RFID · oficina dep · GC103787','10.3.8.82':'CL4NX plus RFID · oficina dep · HK101802','10.3.8.81':'CL4NX plus RFID · oficina dep · GC103754','10.3.8.84':'CL4NX · DEP · FB100089','10.3.8.83':'CL4NX · IA · 4G033128'
+};
+
+function makeDevices(list, group){ return list.map(ip => ({ip, name:NAMES[ip] || '', location:LOCATIONS[ip] || '', group})); }
 const DEVICES = Object.fromEntries(Object.entries(GROUPS).map(([group,list])=>[group,makeDevices(list,group)]));
