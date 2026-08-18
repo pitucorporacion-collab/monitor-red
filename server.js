@@ -2,12 +2,14 @@ const http = require('http');
 const { execFile } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const vm = require('vm');
 
 const PORT = 3000;
-const dataPath = path.join(__dirname, 'data.json');
+const dataPath = path.join(__dirname, 'data.js');
 
 function loadData() {
-  return JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  const source = fs.readFileSync(dataPath, 'utf8');
+  return vm.runInNewContext(`${source}\n;({ GROUPS, NAMES })`);
 }
 
 function ping(ip) {
@@ -28,12 +30,14 @@ const server = http.createServer(async (req, res) => {
 
   if (req.url === '/api/devices') {
     try {
-      const groups = loadData();
+      const { GROUPS, NAMES } = loadData();
       const result = {};
-      for (const [group, devices] of Object.entries(groups)) {
-        result[group] = await Promise.all(devices.map(async (device) => ({
-          ...device,
-          ...(await ping(device.ip))
+      for (const [group, ips] of Object.entries(GROUPS)) {
+        result[group] = await Promise.all(ips.map(async (ip) => ({
+          ip,
+          name: NAMES[ip] || '',
+          group,
+          ...(await ping(ip))
         })));
       }
       res.writeHead(200);
