@@ -3,8 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "description": "Monitor local de dispositivos de red",
-  "main": "server.js",
+  "main": "main.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "build:win": "electron-builder --win --x64"
+  },
+  "devDependencies": {
+    "electron": "^37.2.6",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.pitu.monitorred",
+    "productName": "Monitor Red",
+    "files": ["main.js", "server.js", "index.html", "styles.css", "app.js", "data.js", "data.json", "package.json"],
+    "win": { "target": "nsis", "artifactName": "Monitor-Red-${version}-Setup.exe" }
   }
 }
