@@ -24,8 +24,11 @@
         <div class="lastCheck" id="lastCheck">Último chequeo: —</div>
         <button class="smallAction" id="onlyProblemsBtn">🔴 SOLO PROBLEMAS</button>
         <div class="homeExtraActions">
-          <button class="smallAction rfidAction" id="rfidPageBtn">RFIDPAGE</button>
-          <button class="rackAction" id="racksBtn">RACKS</button>
+          <span class="toolsLabel">HERRAMIENTAS</span>
+          <div class="toolsButtons">
+            <button class="smallAction rfidAction" id="rfidPageBtn">RFIDPAGE</button>
+            <button class="smallAction rackAction" id="racksBtn">RACKS</button>
+          </div>
         </div>
       </div>
       <div class="cards" id="groupCards"></div>
@@ -68,27 +71,22 @@
         </div>
       </div>
 
-      <div class="rackButtons" id="rackButtons"></div>
-
-      <div class="rackPreview">
-        <div class="rackPreviewHeader">
-          <div>
-            <h3 id="selectedRackTitle">Seleccione un rack</h3>
-            <p id="selectedRackLocation">—</p>
+      <div class="rackWorkspace">
+        <div class="rackButtons" id="rackButtons"></div>
+        <div class="rackPreview">
+          <div class="rackPreviewHeader">
+            <div>
+              <h3 id="selectedRackTitle">Seleccione un rack</h3>
+              <p id="selectedRackLocation">—</p>
+            </div>
           </div>
-          <button class="imageButton" id="rackImageBtn" disabled>IMAGEN</button>
-        </div>
-        <div class="rackImageFrame" id="rackImageFrame">
-          <div class="rackImagePlaceholder" id="rackImagePlaceholder">Seleccione un rack para mostrar su imagen</div>
-          <img id="rackImage" alt="Imagen del rack" />
+          <div class="rackImageFrame" id="rackImageFrame">
+            <div class="rackImagePlaceholder" id="rackImagePlaceholder">Seleccione un rack para mostrar su imagen</div>
+            <img id="rackImage" class="rackImage" alt="Imagen del rack" title="Clic para abrir la imagen con el visor predeterminado de Windows" />
+          </div>
         </div>
       </div>
     </section>
-
-    <div class="imageModal" id="imageModal" aria-hidden="true">
-      <button class="imageModalClose" id="imageModalClose">×</button>
-      <img id="imageModalImg" alt="Imagen ampliada del rack" />
-    </div>
   </main>
 
   <script src="data.js"></script>
