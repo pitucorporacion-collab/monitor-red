@@ -6,8 +6,17 @@ const vm = require('vm');
 
 const PORT = 3000;
 const dataPath = path.join(__dirname, 'data.js');
+const userDataPath = process.env.MONITOR_USER_DATA;
 
 function loadData() {
+  if (userDataPath && fs.existsSync(userDataPath)) {
+    try {
+      const saved = JSON.parse(fs.readFileSync(userDataPath, 'utf8'));
+      if (saved && typeof saved === 'object') return saved;
+    } catch (e) {
+      console.log('Configuración guardada inválida, usando datos originales:', e.message);
+    }
+  }
   const source = fs.readFileSync(dataPath, 'utf8') + '\nmodule.exports = DEVICES;';
   const sandbox = { module: { exports: {} } };
   vm.runInNewContext(source, sandbox);
