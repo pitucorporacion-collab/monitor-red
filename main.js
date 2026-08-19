@@ -88,15 +88,15 @@ async function autoLoginRfid(win) {
 
     // Login solicitado: RV -> TAB -> hhhigarcia -> TAB -> 123123 -> ENTER.
     await typeText('RV');
-    await wait(1000);
+    await wait(600);
     await pressTab();
-    await wait(1000);
+    await wait(600);
     await typeText('hhhigarcia');
-    await wait(1000);
+    await wait(600);
     await pressTab();
-    await wait(1000);
+    await wait(600);
     await typeText('123123');
-    await wait(1000);
+    await wait(3000);
     await pressEnter();
   } catch (e) {
     console.log('Login RFID automático no pudo completarse:', e.message);
