@@ -55,12 +55,8 @@ const RACKS = [
 const rackButtons = document.getElementById('rackButtons');
 const selectedRackTitle = document.getElementById('selectedRackTitle');
 const selectedRackLocation = document.getElementById('selectedRackLocation');
-const rackImageBtn = document.getElementById('rackImageBtn');
 const rackImage = document.getElementById('rackImage');
 const rackImagePlaceholder = document.getElementById('rackImagePlaceholder');
-const imageModal = document.getElementById('imageModal');
-const imageModalImg = document.getElementById('imageModalImg');
-const imageModalClose = document.getElementById('imageModalClose');
 let selectedRack = null;
 let selectedRackImage = null;
 
@@ -189,6 +185,7 @@ function renderTable(group, statuses){
     const locationCell=document.createElement('td');
     const locationInput=inputCell(device.location,'location','Ubicación');
     locationInput.oninput=()=>{ device.location=locationInput.value; };
+    nameCell.appendChild(nameInput);
     locationCell.appendChild(locationInput);
     const statusCell=document.createElement('td');
     let statusHtml='<span class="status"><span class="dot unknown"></span>COMPROBANDO</span>';
@@ -366,7 +363,7 @@ function renderRacks() {
     const button = document.createElement('button');
     button.className = 'rackCard';
     button.dataset.rack = rack;
-    button.innerHTML = `<strong>RACK ${rack}</strong><span>${location}</span>`;
+    button.innerHTML = `<strong>${rack}</strong><span>${location}</span>`;
     button.onclick = () => selectRack(rack, location, button);
     rackButtons.appendChild(button);
   });
@@ -376,9 +373,8 @@ async function selectRack(rack, location, button) {
   selectedRack = rack;
   document.querySelectorAll('.rackCard').forEach(el => el.classList.remove('selected'));
   button.classList.add('selected');
-  selectedRackTitle.textContent = `RACK ${rack}`;
+  selectedRackTitle.textContent = rack;
   selectedRackLocation.textContent = location;
-  rackImageBtn.disabled = true;
   rackImage.src = '';
   rackImage.classList.remove('visible');
   rackImagePlaceholder.textContent = 'Cargando imagen...';
@@ -388,9 +384,8 @@ async function selectRack(rack, location, button) {
     rackImage.src = selectedRackImage;
     rackImage.classList.add('visible');
     rackImagePlaceholder.style.display = 'none';
-    rackImageBtn.disabled = false;
   } else {
-    rackImagePlaceholder.textContent = `Sin imagen para RACK ${rack}`;
+    rackImagePlaceholder.textContent = `Sin imagen para ${rack}`;
   }
 }
 
@@ -407,30 +402,18 @@ function closeRacks() {
   home.classList.add('active');
   selectedRack = null;
   selectedRackImage = null;
+  rackImage.src = '';
+  rackImage.classList.remove('visible');
+  rackImagePlaceholder.style.display = 'flex';
+  rackImagePlaceholder.textContent = 'Seleccione un rack para mostrar su imagen';
   document.querySelectorAll('.rackCard').forEach(el => el.classList.remove('selected'));
-}
-
-function openImageModal() {
-  if (!selectedRackImage) return;
-  imageModalImg.src = selectedRackImage;
-  imageModal.classList.add('active');
-  imageModal.setAttribute('aria-hidden', 'false');
-}
-
-function closeImageModal() {
-  imageModal.classList.remove('active');
-  imageModal.setAttribute('aria-hidden', 'true');
-  imageModalImg.src = '';
 }
 
 onlyProblemsBtn.onclick=openProblems;
 rfidPageBtn.onclick=()=>window.monitorAPI.openRfidPages();
 racksBtn.onclick=openRacks;
 document.getElementById('racksBackBtn').onclick=closeRacks;
-rackImageBtn.onclick=openImageModal;
-imageModalClose.onclick=closeImageModal;
-imageModal.onclick=(event)=>{ if(event.target === imageModal) closeImageModal(); };
-document.addEventListener('keydown',(event)=>{ if(event.key === 'Escape') closeImageModal(); });
+rackImage.onclick=()=>{ if(selectedRack) window.monitorAPI.openRackImage(selectedRack); };
 
 function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('es-AR');}
 
