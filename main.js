@@ -7,8 +7,9 @@ let rfidReportWindow;
 
 const RFID_REPORT_URL = 'http://rfid.radiovictoria.com.ar/#/Reporte01';
 
-// Archivo de configuración compartido en el File Server.
+// Archivos compartidos en el File Server.
 const SHARED_DATA_FILE = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\monitor-data.json';
+const SHARED_RACKS_DATA_FILE = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\rack-data.json';
 const SHARED_RACKS_DIR = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\racks';
 
 function getUserDataFile() {
@@ -144,8 +145,27 @@ ipcMain.handle('save-device-config', (_event, config) => {
   return true;
 });
 
+ipcMain.handle('load-rack-config', () => {
+  try {
+    if (fs.existsSync(SHARED_RACKS_DATA_FILE)) return JSON.parse(fs.readFileSync(SHARED_RACKS_DATA_FILE, 'utf8'));
+  } catch (e) {
+    console.log('No se pudo leer la configuración de racks:', e.message);
+  }
+  return {};
+});
+
+ipcMain.handle('save-rack-config', (_event, config) => {
+  fs.mkdirSync(path.dirname(SHARED_RACKS_DATA_FILE), { recursive: true });
+  fs.writeFileSync(SHARED_RACKS_DATA_FILE, JSON.stringify(config, null, 2), 'utf8');
+  return true;
+});
+
+function safeRackName(rack) {
+  return String(rack || '').replace(/[^a-zA-Z0-9_-]/g, '');
+}
+
 ipcMain.handle('load-rack-image', (_event, rack) => {
-  const safeRack = String(rack || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  const safeRack = safeRackName(rack);
   const extensions = ['jpg', 'jpeg', 'png', 'webp'];
   for (const ext of extensions) {
     const file = path.join(SHARED_RACKS_DIR, `${safeRack}.${ext}`);
@@ -163,7 +183,7 @@ ipcMain.handle('load-rack-image', (_event, rack) => {
 });
 
 ipcMain.handle('open-rack-image', async (_event, rack) => {
-  const safeRack = String(rack || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  const safeRack = safeRackName(rack);
   const extensions = ['jpg', 'jpeg', 'png', 'webp'];
   for (const ext of extensions) {
     const file = path.join(SHARED_RACKS_DIR, `${safeRack}.${ext}`);
