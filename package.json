@@ -1,6 +1,6 @@
 {
   "name": "monitor-red",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "private": true,
   "description": "Monitor local de dispositivos de red RVF Rio Grande",
   "main": "main.js",
