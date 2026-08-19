@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -160,6 +160,23 @@ ipcMain.handle('load-rack-image', (_event, rack) => {
     }
   }
   return null;
+});
+
+ipcMain.handle('open-rack-image', async (_event, rack) => {
+  const safeRack = String(rack || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  const extensions = ['jpg', 'jpeg', 'png', 'webp'];
+  for (const ext of extensions) {
+    const file = path.join(SHARED_RACKS_DIR, `${safeRack}.${ext}`);
+    try {
+      if (fs.existsSync(file)) {
+        const result = await shell.openPath(file);
+        return result || true;
+      }
+    } catch (e) {
+      console.log(`No se pudo abrir la imagen del rack ${safeRack}:`, e.message);
+    }
+  }
+  return false;
 });
 
 app.whenReady().then(() => {
