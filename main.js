@@ -8,9 +8,11 @@ let rfidStockWindow;
 
 const RFID_REPORT_URL = 'http://rfid.radiovictoria.com.ar/#/Reporte01';
 
+// Archivo de configuración compartido en el File Server.
+const SHARED_DATA_FILE = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\monitor-data.json';
 
 function getUserDataFile() {
-  return path.join(app.getPath('userData'), 'monitor-data.json');
+  return SHARED_DATA_FILE;
 }
 
 function startServer() {
