@@ -4,12 +4,12 @@ const fs = require('fs');
 
 let server;
 let rfidReportWindow;
-let rfidStockWindow;
 
 const RFID_REPORT_URL = 'http://rfid.radiovictoria.com.ar/#/Reporte01';
 
 // Archivo de configuración compartido en el File Server.
 const SHARED_DATA_FILE = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\monitor-data.json';
+const SHARED_RACKS_DIR = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\racks';
 
 function getUserDataFile() {
   return SHARED_DATA_FILE;
@@ -69,26 +69,18 @@ async function autoLoginRfid(win) {
       }
     };
 
-    const pressTab = async () => {
-      pressKey(win, 'TAB');
-    };
+    const pressTab = async () => pressKey(win, 'TAB');
+    const pressBackspace = async () => pressKey(win, 'BACKSPACE');
+    const pressEnter = async () => pressKey(win, 'ENTER');
 
-    const pressBackspace = async () => {
-      pressKey(win, 'BACKSPACE');
-    };
-
-    const pressEnter = async () => {
-      pressKey(win, 'ENTER');
-    };
-
-    // Limpiar caracteres que hayan quedado en el campo enfocado.
     for (let i = 0; i < 6; i++) {
       await pressBackspace();
       await wait(150);
     }
     await wait(1000);
 
-    // Login solicitado: RV -> TAB -> hhhigarcia -> TAB -> 123123 -> ENTER.
+    // Login: RV -> TAB -> hhhigarcia -> TAB -> 123123 -> TAB -> ENTER.
+    // Se mantienen 600 ms entre acciones.
     await typeText('RV');
     await wait(600);
     await pressTab();
@@ -98,7 +90,9 @@ async function autoLoginRfid(win) {
     await pressTab();
     await wait(600);
     await typeText('123123');
-    await wait(3000);
+    await wait(600);
+    await pressTab();
+    await wait(600);
     await pressEnter();
   } catch (e) {
     console.log('Login RFID automático no pudo completarse:', e.message);
@@ -129,13 +123,6 @@ function openRfidPages() {
     rfidReportWindow = createRfidWindow(RFID_REPORT_URL, 'RFID - Reporte', autoLoginRfid);
     rfidReportWindow.on('closed', () => { rfidReportWindow = null; });
   }
-
-  if (rfidStockWindow && !rfidStockWindow.isDestroyed()) {
-    rfidStockWindow.show();
-  } else {
-    rfidStockWindow = createRfidWindow(RFID_STOCK_URL, 'RFID - Stock');
-    rfidStockWindow.on('closed', () => { rfidStockWindow = null; });
-  }
 }
 
 ipcMain.on('open-rfid-pages', openRfidPages);
@@ -155,6 +142,24 @@ ipcMain.handle('save-device-config', (_event, config) => {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, JSON.stringify(config, null, 2), 'utf8');
   return true;
+});
+
+ipcMain.handle('load-rack-image', (_event, rack) => {
+  const safeRack = String(rack || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  const extensions = ['jpg', 'jpeg', 'png', 'webp'];
+  for (const ext of extensions) {
+    const file = path.join(SHARED_RACKS_DIR, `${safeRack}.${ext}`);
+    try {
+      if (fs.existsSync(file)) {
+        const buffer = fs.readFileSync(file);
+        const mime = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : `image/${ext}`;
+        return `data:${mime};base64,${buffer.toString('base64')}`;
+      }
+    } catch (e) {
+      console.log(`No se pudo leer la imagen del rack ${safeRack}:`, e.message);
+    }
+  }
+  return null;
 });
 
 app.whenReady().then(() => {
