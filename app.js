@@ -127,10 +127,17 @@ function renderTable(group, statuses){
   sortedDevices(group).forEach(device=>{
     const state = statuses?.[device.ip];
     const tr=document.createElement('tr');
-    tr.dataset.ip=device.ip;
+    tr.dataset.deviceIndex = editableDevices[group].indexOf(device);
     const ipCell=document.createElement('td');
     ipCell.className='ip';
-    ipCell.textContent=device.ip || 'NUEVA IP';
+    if(device.newRow){
+      const ipInput=inputCell(device.ip,'ip','Nueva IP');
+      ipInput.classList.add('newIpInput');
+      ipInput.oninput=()=>{ device.ip=ipInput.value.trim(); };
+      ipCell.appendChild(ipInput);
+    } else {
+      ipCell.textContent=device.ip;
+    }
     const nameCell=document.createElement('td');
     const nameInput=inputCell(device.name,'name','Nombre');
     nameInput.oninput=()=>{ device.name=nameInput.value; };
@@ -273,8 +280,8 @@ addRowBtn.onclick=()=>{
   editableDevices[currentGroup].push(newDevice);
   renderTable(currentGroup,statusCache[currentGroup]||null);
   subtitle.textContent=`${editableDevices[currentGroup].length} IPs registradas`;
-  const inputs=table.querySelectorAll('input');
-  if(inputs.length) inputs[inputs.length-2].focus();
+  const newIp=table.querySelector('.newIpInput');
+  if(newIp) newIp.focus();
 };
 
 saveBtn.onclick=async()=>{
@@ -282,18 +289,28 @@ saveBtn.onclick=async()=>{
   const rows=[...table.querySelectorAll('tr')];
   const current=editableDevices[currentGroup];
   rows.forEach(row=>{
-    const ip=row.dataset.ip;
-    const device=current.find(d=>d.ip===ip);
-    if(device){
-      const inputs=row.querySelectorAll('input');
+    const index=Number(row.dataset.deviceIndex);
+    const device=current[index];
+    if(!device) return;
+    const inputs=row.querySelectorAll('input');
+    if(device.newRow){
+      if(inputs[0]) device.ip=inputs[0].value.trim();
+      if(inputs[1]) device.name=inputs[1].value;
+      if(inputs[2]) device.location=inputs[2].value;
+    } else {
       if(inputs[0]) device.name=inputs[0].value;
       if(inputs[1]) device.location=inputs[1].value;
     }
   });
+  const before=current.length;
+  editableDevices[currentGroup]=current.filter(d=>d.ip || !d.newRow);
+  const removed=before-editableDevices[currentGroup].length;
   const ok=await saveConfig();
   saveBtn.textContent=ok?'✓ GUARDADO':'⚠ ERROR';
   setTimeout(()=>saveBtn.textContent='💾 GUARDAR',1200);
+  subtitle.textContent=`${editableDevices[currentGroup].length} IPs registradas`;
   renderHome();
+  renderTable(currentGroup,statusCache[currentGroup]||null);
 };
 
 onlyProblemsBtn.onclick=openProblems;
