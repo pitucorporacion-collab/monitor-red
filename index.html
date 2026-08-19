@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=820, height=576, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Monitor Red RVF Rio Grande</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -35,12 +35,21 @@
           <h2 id="listTitle">GRUPO</h2>
           <p id="listSubtitle"></p>
         </div>
-        <button class="refresh" id="refreshBtn">↻ ACTUALIZAR</button>
+        <div class="listActions">
+          <button class="refresh" id="refreshBtn">↻ ACTUALIZAR</button>
+          <button class="addRow" id="addRowBtn">＋ AGREGAR FILA</button>
+          <button class="saveBtn" id="saveBtn">💾 GUARDAR</button>
+        </div>
       </div>
       <div class="tableWrap">
         <table>
           <thead>
-            <tr><th>IP</th><th>NOMBRE</th><th>UBICACIÓN</th><th>ESTADO</th></tr>
+            <tr>
+              <th data-sort="ip">IP <span class="sortMark"></span></th>
+              <th data-sort="name">NOMBRE <span class="sortMark"></span></th>
+              <th data-sort="location">UBICACIÓN <span class="sortMark"></span></th>
+              <th data-sort="status">ESTADO <span class="sortMark"></span></th>
+            </tr>
           </thead>
           <tbody id="deviceTable"></tbody>
         </table>
