@@ -23,7 +23,10 @@
         <div class="summaryBox offlineBox"><b id="offlineTotal">0</b><span> OFFLINE</span></div>
         <div class="lastCheck" id="lastCheck">Último chequeo: —</div>
         <button class="smallAction" id="onlyProblemsBtn">🔴 SOLO PROBLEMAS</button>
-        <button class="smallAction rfidAction" id="rfidPageBtn">RFIDPAGE</button>
+        <div class="homeExtraActions">
+          <button class="smallAction rfidAction" id="rfidPageBtn">RFIDPAGE</button>
+          <button class="rackAction" id="racksBtn">RACKS</button>
+        </div>
       </div>
       <div class="cards" id="groupCards"></div>
     </section>
@@ -55,6 +58,37 @@
         </table>
       </div>
     </section>
+
+    <section id="racksView" class="view racksView">
+      <div class="listHeader racksHeader">
+        <button class="back" id="racksBackBtn">← VOLVER</button>
+        <div>
+          <h2>RACKS</h2>
+          <p id="rackSubtitle">Seleccione un rack para ver su imagen</p>
+        </div>
+      </div>
+
+      <div class="rackButtons" id="rackButtons"></div>
+
+      <div class="rackPreview">
+        <div class="rackPreviewHeader">
+          <div>
+            <h3 id="selectedRackTitle">Seleccione un rack</h3>
+            <p id="selectedRackLocation">—</p>
+          </div>
+          <button class="imageButton" id="rackImageBtn" disabled>IMAGEN</button>
+        </div>
+        <div class="rackImageFrame" id="rackImageFrame">
+          <div class="rackImagePlaceholder" id="rackImagePlaceholder">Seleccione un rack para mostrar su imagen</div>
+          <img id="rackImage" alt="Imagen del rack" />
+        </div>
+      </div>
+    </section>
+
+    <div class="imageModal" id="imageModal" aria-hidden="true">
+      <button class="imageModalClose" id="imageModalClose">×</button>
+      <img id="imageModalImg" alt="Imagen ampliada del rack" />
+    </div>
   </main>
 
   <script src="data.js"></script>
