@@ -1,6 +1,7 @@
 const icons = { APS:'🛜', SW:'🌐', CAM:'🎥', RFID:'🏷️', MPC:'🖥️', SATO:'🖨️', LEXMARK:'📇' };
 const home = document.getElementById('home');
 const listView = document.getElementById('listView');
+const racksView = document.getElementById('racksView');
 const cards = document.getElementById('groupCards');
 const table = document.getElementById('deviceTable');
 const title = document.getElementById('listTitle');
@@ -11,6 +12,7 @@ const offlineTotal = document.getElementById('offlineTotal');
 const lastCheck = document.getElementById('lastCheck');
 const onlyProblemsBtn = document.getElementById('onlyProblemsBtn');
 const rfidPageBtn = document.getElementById('rfidPageBtn');
+const racksBtn = document.getElementById('racksBtn');
 const saveBtn = document.getElementById('saveBtn');
 const addRowBtn = document.getElementById('addRowBtn');
 
@@ -19,6 +21,48 @@ let lastCheckAt = null;
 let isChecking = false;
 let currentGroup = null;
 let sortState = { key: 'ip', direction: 'asc' };
+
+const RACKS = [
+  ['01', 'IA DEPO'],
+  ['02', 'IA SALA'],
+  ['04', 'IA FONDO'],
+  ['05', 'NACIONALES'],
+  ['06', 'RESIDUOS'],
+  ['07', 'TELEVISION'],
+  ['Cel1', 'CEL01'],
+  ['Cel2', 'CEL02'],
+  ['08', 'NAC2'],
+  ['08b', 'MYT'],
+  ['09', 'EXPEDISION'],
+  ['09b', 'CALIDAD'],
+  ['10', 'MAT PRIMA'],
+  ['11', 'DEP RVF'],
+  ['12', 'AIRE 1'],
+  ['13', 'DARSENAS'],
+  ['14', 'AIRE 2'],
+  ['15', 'SALA BOMBAS'],
+  ['16', 'FCT'],
+  ['17', 'LABORATORIO'],
+  ['18', 'DEP NUEVO'],
+  ['19', 'NVR SALA'],
+  ['20', 'IA FONDO'],
+  ['tv1', 'TV 1'],
+  ['tv2', 'TV 2'],
+  ['tv3', 'TV 3'],
+  ['tv4', 'TV 4']
+];
+
+const rackButtons = document.getElementById('rackButtons');
+const selectedRackTitle = document.getElementById('selectedRackTitle');
+const selectedRackLocation = document.getElementById('selectedRackLocation');
+const rackImageBtn = document.getElementById('rackImageBtn');
+const rackImage = document.getElementById('rackImage');
+const rackImagePlaceholder = document.getElementById('rackImagePlaceholder');
+const imageModal = document.getElementById('imageModal');
+const imageModalImg = document.getElementById('imageModalImg');
+const imageModalClose = document.getElementById('imageModalClose');
+let selectedRack = null;
+let selectedRackImage = null;
 
 function cloneDevices(source) {
   return Object.fromEntries(Object.entries(source).map(([group, devices]) => [group, devices.map(d => ({ ...d }))]));
@@ -162,6 +206,7 @@ function renderTable(group, statuses){
 function openGroup(group){
   currentGroup=group;
   sortState={key:'ip',direction:'asc'};
+  racksView.classList.remove('active');
   home.classList.remove('active');
   listView.classList.add('active');
   title.textContent=group;
@@ -172,6 +217,7 @@ function openGroup(group){
 
 function openProblems(){
   home.classList.remove('active');
+  racksView.classList.remove('active');
   listView.classList.add('active');
   currentGroup=null;
   title.textContent='SOLO PROBLEMAS';
@@ -264,6 +310,7 @@ document.querySelectorAll('th[data-sort]').forEach(th=>{
 
 document.getElementById('backBtn').onclick=()=>{
   listView.classList.remove('active');
+  racksView.classList.remove('active');
   home.classList.add('active');
   currentGroup=null;
   renderHome();
@@ -313,8 +360,77 @@ saveBtn.onclick=async()=>{
   renderTable(currentGroup,statusCache[currentGroup]||null);
 };
 
+function renderRacks() {
+  rackButtons.innerHTML = '';
+  RACKS.forEach(([rack, location]) => {
+    const button = document.createElement('button');
+    button.className = 'rackCard';
+    button.dataset.rack = rack;
+    button.innerHTML = `<strong>RACK ${rack}</strong><span>${location}</span>`;
+    button.onclick = () => selectRack(rack, location, button);
+    rackButtons.appendChild(button);
+  });
+}
+
+async function selectRack(rack, location, button) {
+  selectedRack = rack;
+  document.querySelectorAll('.rackCard').forEach(el => el.classList.remove('selected'));
+  button.classList.add('selected');
+  selectedRackTitle.textContent = `RACK ${rack}`;
+  selectedRackLocation.textContent = location;
+  rackImageBtn.disabled = true;
+  rackImage.src = '';
+  rackImage.classList.remove('visible');
+  rackImagePlaceholder.textContent = 'Cargando imagen...';
+  rackImagePlaceholder.style.display = 'flex';
+  selectedRackImage = await window.monitorAPI.loadRackImage(rack);
+  if (selectedRackImage) {
+    rackImage.src = selectedRackImage;
+    rackImage.classList.add('visible');
+    rackImagePlaceholder.style.display = 'none';
+    rackImageBtn.disabled = false;
+  } else {
+    rackImagePlaceholder.textContent = `Sin imagen para RACK ${rack}`;
+  }
+}
+
+function openRacks() {
+  home.classList.remove('active');
+  listView.classList.remove('active');
+  racksView.classList.add('active');
+  currentGroup = null;
+  if (!rackButtons.children.length) renderRacks();
+}
+
+function closeRacks() {
+  racksView.classList.remove('active');
+  home.classList.add('active');
+  selectedRack = null;
+  selectedRackImage = null;
+  document.querySelectorAll('.rackCard').forEach(el => el.classList.remove('selected'));
+}
+
+function openImageModal() {
+  if (!selectedRackImage) return;
+  imageModalImg.src = selectedRackImage;
+  imageModal.classList.add('active');
+  imageModal.setAttribute('aria-hidden', 'false');
+}
+
+function closeImageModal() {
+  imageModal.classList.remove('active');
+  imageModal.setAttribute('aria-hidden', 'true');
+  imageModalImg.src = '';
+}
+
 onlyProblemsBtn.onclick=openProblems;
 rfidPageBtn.onclick=()=>window.monitorAPI.openRfidPages();
+racksBtn.onclick=openRacks;
+document.getElementById('racksBackBtn').onclick=closeRacks;
+rackImageBtn.onclick=openImageModal;
+imageModalClose.onclick=closeImageModal;
+imageModal.onclick=(event)=>{ if(event.target === imageModal) closeImageModal(); };
+document.addEventListener('keydown',(event)=>{ if(event.key === 'Escape') closeImageModal(); });
 
 function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('es-AR');}
 
