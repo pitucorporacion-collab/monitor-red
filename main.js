@@ -7,7 +7,7 @@ let rfidReportWindow;
 let rfidStockWindow;
 
 const RFID_REPORT_URL = 'http://rfid.radiovictoria.com.ar/#/Reporte01';
-const RFID_STOCK_URL = 'http://rfid.radiovictoria.com.ar/#/stkItemMov';
+
 
 function getUserDataFile() {
   return path.join(app.getPath('userData'), 'monitor-data.json');
