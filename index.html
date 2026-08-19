@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Monitor Red RVF Rio Grande</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="rack-overrides.css" />
 </head>
 <body>
   <main class="app">
@@ -17,8 +18,7 @@
         <div class="summaryBox"><b id="total">0</b><span> IPs</span></div><div class="summaryBox onlineBox"><b id="onlineTotal">0</b><span> ONLINE</span></div><div class="summaryBox offlineBox"><b id="offlineTotal">0</b><span> OFFLINE</span></div>
         <button class="smallAction" id="onlyProblemsBtn">🔴 SOLO PROBLEMAS</button>
         <div class="homeExtraActions"><span class="toolsLabel">HERRAMIENTAS</span><div class="toolsButtons"><button class="smallAction rfidAction" id="rfidPageBtn">RFIDPAGE</button><button class="smallAction rackAction" id="racksBtn">RACKS</button></div></div>
-      </div>
-      <div class="cards" id="groupCards"></div>
+      </div><div class="cards" id="groupCards"></div>
     </section>
     <section id="listView" class="view">
       <div class="listHeader"><button class="back" id="backBtn">← VOLVER</button><div><h2 id="listTitle">GRUPO</h2><p id="listSubtitle"></p></div><div class="listActions"><button class="refresh" id="refreshBtn">↻ ACTUALIZAR</button><button class="addRow" id="addRowBtn">＋ AGREGAR FILA</button><button class="saveBtn" id="saveBtn">💾 GUARDAR</button></div></div>
