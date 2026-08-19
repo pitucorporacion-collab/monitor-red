@@ -1,0 +1,1 @@
+Carpeta reservada para las fotos de los racks. Esta versión solo agrega el botón RACK; las fotos se incorporarán después.
