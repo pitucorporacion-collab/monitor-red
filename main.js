@@ -20,7 +20,7 @@ function startServer() {
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 820,
+    width: 860,
     height: 576,
     minWidth: 700,
     minHeight: 500,
