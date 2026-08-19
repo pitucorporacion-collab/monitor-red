@@ -1,4 +1,4 @@
-const icons = { APS:'📡', SW:'🔀', CAM:'📷', RFID:'🏷️', MPC:'🖥️', SATO:'🖨️', LEXMARK:'🖨️' };
+const icons = { APS:'🛜', SW:'🌐', CAM:'🎥', RFID:'🏷️', MPC:'🖥️', SATO:'🖨️', LEXMARK:'📇' };
 const home = document.getElementById('home');
 const listView = document.getElementById('listView');
 const cards = document.getElementById('groupCards');
