@@ -1,0 +1,38 @@
+name: Ajustar ventana inicial
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  resize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+      - name: Cambiar tamaño de ventana
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('main.js')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('width: 820,', 'width: 1000,', 1)
+          s = s.replace('height: 576,', 'height: 605,', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Confirmar cambios
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add main.js
+          git commit -m "Ajustar ventana inicial a 1000x605"
+          git push
+      - name: Eliminar este workflow temporal
+        if: success()
+        run: |
+          git rm .github/workflows/set-window-size.yml
+          git commit -m "Eliminar workflow temporal de ajuste de ventana"
+          git push
