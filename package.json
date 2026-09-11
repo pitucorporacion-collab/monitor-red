@@ -1,6 +1,6 @@
 {
   "name": "monitor-red",
-  "version": "2.3.0",
+  "version": "2.4.1",
   "private": true,
   "description": "Monitor local de dispositivos de red RVF Rio Grande",
   "main": "main.js",
@@ -15,7 +15,7 @@
   "build": {
     "appId": "com.pitu.monitorred",
     "productName": "Monitor Red",
-    "files": ["main.js", "preload.js", "server.js", "index.html", "styles.css", "app.js", "data.js", "data.json", "package.json"],
+    "files": ["main.js", "preload.js", "server.js", "index.html", "styles.css", "app.js", "data.js", "data.json", "package.json", "table-columns.js"],
     "win": {
       "target": [
         { "target": "portable", "arch": ["x64"] }
