@@ -37,13 +37,11 @@
     let del = headRow.querySelector('.deleteHeader');
     if(isProblems()){
       if(del) del.remove();
-    }else{
-      if(!del){
-        del = document.createElement('th');
-        del.className = 'deleteHeader';
-        del.textContent = 'ELIMINAR';
-        headRow.appendChild(del);
-      }
+    }else if(!del){
+      del = document.createElement('th');
+      del.className = 'deleteHeader';
+      del.textContent = 'ELIMINAR';
+      headRow.appendChild(del);
     }
   }
 
@@ -56,19 +54,29 @@
       if(!row.querySelector('.macCell')){
         const cell = document.createElement('td');
         cell.className = 'macCell';
+
         if(isProblems()){
           cell.textContent = device.mac || '';
         }else{
           const input = document.createElement('input');
-          input.className = 'cellInput';
+          input.type = 'text';
+          input.className = 'cellInput macInput';
           input.placeholder = 'MAC';
           input.maxLength = 12;
           input.autocomplete = 'off';
+          input.spellcheck = false;
+          input.readOnly = false;
+          input.tabIndex = 0;
           input.value = device.mac || '';
-          input.oninput = () => {
+          input.addEventListener('mousedown', e => e.stopPropagation());
+          input.addEventListener('click', e => e.stopPropagation());
+          input.addEventListener('focus', () => {
+            input.style.cursor = 'text';
+          });
+          input.addEventListener('input', () => {
             input.value = input.value.replace(/[^0-9a-f]/gi,'').slice(0,12).toUpperCase();
             device.mac = input.value;
-          };
+          });
           cell.appendChild(input);
         }
         row.appendChild(cell);
