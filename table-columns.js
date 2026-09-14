@@ -16,10 +16,26 @@
 
   function deviceFromRow(row){
     if(isProblems()){
-      return findDeviceByIp(row.querySelector('.ip')?.textContent?.trim() || '');
+      const ipText = row.querySelector('.ip a')?.textContent?.trim() || row.querySelector('.ip')?.textContent?.trim() || '';
+      return findDeviceByIp(ipText);
     }
     const index = Number(row.dataset.deviceIndex);
     return editableDevices[currentGroup]?.[index] || null;
+  }
+
+  function restoreIpLink(row, device){
+    if(!device?.ip || !row.querySelector('.ip') || row.querySelector('.ip a')) return;
+    if(currentGroup !== 'SATO' && currentGroup !== 'LEXMARK') return;
+    const ipCell = row.querySelector('.ip');
+    if(ipCell.querySelector('input')) return;
+    const ip = device.ip;
+    ipCell.textContent = '';
+    const a = document.createElement('a');
+    a.href = `https://${ip}`;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = ip;
+    ipCell.appendChild(a);
   }
 
   function ensureHeaders(){
@@ -50,6 +66,8 @@
     table.querySelectorAll('tr').forEach(row => {
       const device = deviceFromRow(row);
       if(!device) return;
+
+      restoreIpLink(row, device);
 
       if(!row.querySelector('.macCell')){
         const cell = document.createElement('td');
