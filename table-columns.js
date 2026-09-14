@@ -25,7 +25,6 @@
 
   function restoreIpLink(row, device){
     if(!device?.ip || !row.querySelector('.ip') || row.querySelector('.ip a')) return;
-    if(currentGroup !== 'SATO' && currentGroup !== 'LEXMARK') return;
     const ipCell = row.querySelector('.ip');
     if(ipCell.querySelector('input')) return;
     const ip = device.ip;
