@@ -17,6 +17,10 @@ jobs:
           node-version: 22
       - name: Instalar dependencias
         run: npm install
+      - name: Generar data.json
+        shell: pwsh
+        run: |
+          node -e "const fs=require('fs'),vm=require('vm'); const src=fs.readFileSync('data.js','utf8')+'\nmodule.exports=DEVICES;'; const m={exports:{}}; vm.runInNewContext(src,{module:m}); fs.writeFileSync('data.json',JSON.stringify(m.exports,null,2),'utf8');"
       - name: Construir portable
         run: npm run build:win
       - name: Preparar paquete portable
