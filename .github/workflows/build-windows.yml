@@ -19,9 +19,15 @@ jobs:
         run: npm install
       - name: Construir portable
         run: npm run build:win
-      - name: Guardar solo Portable EXE
+      - name: Preparar paquete portable
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path package | Out-Null
+          Copy-Item "dist\Monitor-Red-*-Portable.exe" "package\"
+          Copy-Item "data.json" "package\data.json"
+      - name: Guardar Portable EXE y data.json
         uses: actions/upload-artifact@v4
         with:
           name: Monitor-Red-Portable
-          path: dist/Monitor-Red-*-Portable.exe
+          path: package/*
           if-no-files-found: error
