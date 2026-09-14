@@ -1,0 +1,41 @@
+name: Abrir IPs en navegador predeterminado
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+      - name: Restaurar apertura externa en navegador
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('main.js')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace("const { app, BrowserWindow, ipcMain } = require('electron');", "const { app, BrowserWindow, ipcMain, shell } = require('electron');", 1)
+          marker = "  win.loadFile(path.join(__dirname, 'index.html'));"
+          insert = "  win.webContents.setWindowOpenHandler(({ url }) => {\n    if (url.startsWith('http://') || url.startsWith('https://')) {\n      shell.openExternal(url);\n      return { action: 'deny' };\n    }\n    return { action: 'allow' };\n  });\n\n"
+          if 'win.webContents.setWindowOpenHandler' not in s:
+              if marker not in s:
+                  raise SystemExit('No se encontró el punto esperado en main.js')
+              s = s.replace(marker, insert + marker, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Guardar y eliminar workflow temporal
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/restore-browser-links.yml
+          git add main.js
+          git commit -m "Abrir links de IP en navegador predeterminado"
+          git push
