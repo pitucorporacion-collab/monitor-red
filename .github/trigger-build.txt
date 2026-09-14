@@ -1,0 +1,1 @@
+Trigger build after confirming main window is 1024x700.
