@@ -314,7 +314,6 @@ saveBtn.onclick=async()=>{
 };
 
 onlyProblemsBtn.onclick=openProblems;
-rfidPageBtn.onclick=()=>window.monitorAPI.openRfidPages();
 
 function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('es-AR');}
 
