@@ -29,13 +29,10 @@
     if (!rows.length) body.innerHTML = '<tr><td colspan="9" class="empty">No hay registros que coincidan con los filtros.</td></tr>';
     else rows.forEach(row => {
       const tr = document.createElement('tr');
-      tr.dataset.rack = row.__rack;
-      tr.dataset.index = row.__index;
+      tr.dataset.rack = row.__rack; tr.dataset.index = row.__index;
       rackFields.forEach(field => {
-        const td = document.createElement('td');
-        const input = document.createElement('input');
-        input.className = 'rackCellInput';
-        input.value = row[field] || '';
+        const td = document.createElement('td'); const input = document.createElement('input');
+        input.className = 'rackCellInput'; input.value = row[field] || '';
         input.oninput = () => { const original = rackData[row.__rack]?.[row.__index]; if (original) original[field] = input.value; };
         td.appendChild(input); tr.appendChild(td);
       });
@@ -43,6 +40,15 @@
     });
     const sub = document.getElementById('rackTableSubtitle');
     if (sub) sub.textContent = `${rackAllRows().length} equipos registrados${rows.length !== rackAllRows().length ? ` · ${rows.length} visibles` : ''}`;
+  }
+
+  function selectRack(rack, location, button) {
+    selectedRack = rack;
+    document.querySelectorAll('.rackCard').forEach(el => el.classList.remove('selected'));
+    if (button) button.classList.add('selected');
+    const header = document.getElementById('selectedRackHeader');
+    if (header) header.textContent = `RACK ${rack} - ${location}`;
+    renderAllRackRows();
   }
 
   function renderCompactRackButtons() {
@@ -53,10 +59,7 @@
       const b = document.createElement('button');
       b.className = 'rackCard'; b.dataset.rack = rack;
       b.innerHTML = `<strong>${rack}</strong><span>${location}</span>`;
-      b.onclick = async () => {
-        const img = await window.monitorAPI.loadRackImage(rack);
-        if (img) await window.monitorAPI.openRackImage(rack);
-      };
+      b.onclick = () => selectRack(rack, location, b);
       wrap.appendChild(b);
     });
   }
@@ -88,8 +91,6 @@
   }
 
   function enhanceRacks() { renderCompactRackButtons(); addFilterAndSortUI(); renderAllRackRows(); }
-  window.addEventListener('load', () => setTimeout(enhanceRacks, 0));
-  const oldOpenRacks = window.openRacks;
-  window.openRacks = function() { if (oldOpenRacks) oldOpenRacks(); requestAnimationFrame(enhanceRacks); };
   window.enhanceRacks = enhanceRacks;
+  window.addEventListener('load', () => setTimeout(enhanceRacks, 0));
 })();
