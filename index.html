@@ -24,55 +24,21 @@
       </div>
       <div class="cards" id="groupCards"></div>
     </section>
-
     <section id="listView" class="view">
-      <div class="listHeader">
-        <button class="back" id="backBtn">← VOLVER</button>
-        <div><h2 id="listTitle">GRUPO</h2><p id="listSubtitle"></p></div>
-        <div class="listActions">
-          <button class="refresh" id="refreshBtn">↻ ACTUALIZAR</button>
-          <button class="addRow" id="addRowBtn">＋ AGREGAR FILA</button>
-          <button class="saveBtn" id="saveBtn">💾 GUARDAR</button>
-        </div>
-      </div>
-      <div class="tableWrap">
-        <table>
-          <thead><tr>
-            <th data-sort="ip">IP <span class="sortMark"></span></th>
-            <th data-sort="name">NOMBRE <span class="sortMark"></span></th>
-            <th data-sort="location">UBICACIÓN <span class="sortMark"></span></th>
-            <th data-sort="status">ESTADO <span class="sortMark"></span></th>
-          </tr></thead>
-          <tbody id="deviceTable"></tbody>
-        </table>
-      </div>
+      <div class="listHeader"><button class="back" id="backBtn">← VOLVER</button><div><h2 id="listTitle">GRUPO</h2><p id="listSubtitle"></p></div><div class="listActions"><button class="refresh" id="refreshBtn">↻ ACTUALIZAR</button><button class="addRow" id="addRowBtn">＋ AGREGAR FILA</button><button class="saveBtn" id="saveBtn">💾 GUARDAR</button></div></div>
+      <div class="tableWrap"><table><thead><tr><th data-sort="ip">IP <span class="sortMark"></span></th><th data-sort="name">NOMBRE <span class="sortMark"></span></th><th data-sort="location">UBICACIÓN <span class="sortMark"></span></th><th data-sort="status">ESTADO <span class="sortMark"></span></th></tr></thead><tbody id="deviceTable"></tbody></table></div>
     </section>
-
     <section id="racksView" class="view racksView">
-      <div class="rackListHeader">
-        <button class="back" id="racksBackBtn">← VOLVER</button>
-        <div class="rackHeaderTitle" id="selectedRackHeader">SELECCIONE UN RACK</div>
-        <img id="rackHeaderImage" class="rackHeaderImage" alt="Foto del rack" title="Clic para abrir la imagen con el visor predeterminado de Windows" />
-      </div>
+      <div class="rackListHeader"><button class="back" id="racksBackBtn">← VOLVER</button><div class="rackHeaderTitle" id="selectedRackHeader">SELECCIONE UN RACK</div><img id="rackHeaderImage" class="rackHeaderImage" alt="Foto del rack" title="Clic para abrir la imagen con el visor predeterminado de Windows" /></div>
       <div class="rackSelector"><div class="rackButtons" id="rackButtons"></div></div>
-      <div class="rackTableToolbar">
-        <span id="rackTableSubtitle">Seleccione un rack para ver sus equipos</span>
-        <div class="rackTableActions">
-          <button class="addRow" id="addRackRowBtn">＋ AGREGAR FILA</button>
-          <button class="saveBtn" id="saveRackBtn">💾 GUARDAR</button>
-        </div>
-      </div>
-      <div class="rackTableWrap">
-        <table class="rackTable"><thead><tr>
-          <th>RACK</th><th>SECTOR</th><th>PATCH</th><th>SW</th><th>BOCA</th><th>MARCA</th><th>DESCRIPCIÓN</th><th>HOSTNAME</th><th>IP</th>
-        </tr></thead><tbody id="rackTableBody"></tbody></table>
-      </div>
+      <div class="rackTableToolbar"><span id="rackTableSubtitle">Seleccione un rack para ver sus equipos</span><div class="rackTableActions"><button class="addRow" id="addRackRowBtn">＋ AGREGAR FILA</button><button class="saveBtn" id="saveRackBtn">💾 GUARDAR</button></div></div>
+      <div class="rackTableWrap"><table class="rackTable"><thead><tr><th>RACK</th><th>SECTOR</th><th>PATCH</th><th>SW</th><th>BOCA</th><th>MARCA</th><th>DESCRIPCIÓN</th><th>HOSTNAME</th><th>IP</th></tr></thead><tbody id="rackTableBody"></tbody></table></div>
     </section>
   </main>
-
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="table-columns.js"></script>
+  <script src="rack-core.js"></script>
   <script src="rack-enhance.js"></script>
 </body>
 </html>
