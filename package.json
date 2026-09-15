@@ -15,7 +15,7 @@
   "build": {
     "appId": "com.pitu.monitorred",
     "productName": "Monitor Red",
-    "files": ["main.js", "preload.js", "server.js", "index.html", "styles.css", "app.js", "data.js", "data.json", "package.json", "table-columns.js"],
+    "files": ["main.js", "preload.js", "server.js", "index.html", "styles.css", "app.js", "data.js", "data.json", "package.json", "table-columns.js", "rack-core.js", "rack-enhance.js", "rack-overrides.css"],
     "win": {
       "target": [
         { "target": "portable", "arch": ["x64"] }
