@@ -5,24 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Monitor Red RVF Rio Grande</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="rack-overrides.css" />
 </head>
 <body>
   <main class="app">
     <header class="topbar">
-      <div>
-        <h1>MONITOR RED RVF RIO GRANDE</h1>
-        <p>Panel de monitoreo de red</p>
-      </div>
-      <div class="clock" id="clock">--:--:--</div>
+      <div><h1>MONITOR RED RVF RIO GRANDE</h1><p>Panel de monitoreo de red</p></div>
+      <div class="clockBlock"><div class="clock" id="clock">HORA ACTUAL: --:--:--</div><div class="pingClock" id="lastCheck">ÚLTIMO PING: —</div></div>
     </header>
-
     <section id="home" class="view active">
       <div class="homeControls">
         <div class="summaryBox"><b id="total">0</b><span> IPs</span></div>
         <div class="summaryBox onlineBox"><b id="onlineTotal">0</b><span> ONLINE</span></div>
         <div class="summaryBox offlineBox"><b id="offlineTotal">0</b><span> OFFLINE</span></div>
-        <div class="lastCheck" id="lastCheck">Último chequeo: —</div>
+        <div class="lastCheck" id="homeLastCheck">Último chequeo: —</div>
         <button class="smallAction" id="onlyProblemsBtn">🔴 SOLO PROBLEMAS</button>
+        <button class="smallAction rackAction" id="racksBtn">RACKS</button>
       </div>
       <div class="cards" id="groupCards"></div>
     </section>
@@ -30,10 +28,7 @@
     <section id="listView" class="view">
       <div class="listHeader">
         <button class="back" id="backBtn">← VOLVER</button>
-        <div>
-          <h2 id="listTitle">GRUPO</h2>
-          <p id="listSubtitle"></p>
-        </div>
+        <div><h2 id="listTitle">GRUPO</h2><p id="listSubtitle"></p></div>
         <div class="listActions">
           <button class="refresh" id="refreshBtn">↻ ACTUALIZAR</button>
           <button class="addRow" id="addRowBtn">＋ AGREGAR FILA</button>
@@ -42,16 +37,35 @@
       </div>
       <div class="tableWrap">
         <table>
-          <thead>
-            <tr>
-              <th data-sort="ip">IP <span class="sortMark"></span></th>
-              <th data-sort="name">NOMBRE <span class="sortMark"></span></th>
-              <th data-sort="location">UBICACIÓN <span class="sortMark"></span></th>
-              <th data-sort="status">ESTADO <span class="sortMark"></span></th>
-            </tr>
-          </thead>
+          <thead><tr>
+            <th data-sort="ip">IP <span class="sortMark"></span></th>
+            <th data-sort="name">NOMBRE <span class="sortMark"></span></th>
+            <th data-sort="location">UBICACIÓN <span class="sortMark"></span></th>
+            <th data-sort="status">ESTADO <span class="sortMark"></span></th>
+          </tr></thead>
           <tbody id="deviceTable"></tbody>
         </table>
+      </div>
+    </section>
+
+    <section id="racksView" class="view racksView">
+      <div class="rackListHeader">
+        <button class="back" id="racksBackBtn">← VOLVER</button>
+        <div class="rackHeaderTitle" id="selectedRackHeader">SELECCIONE UN RACK</div>
+        <img id="rackHeaderImage" class="rackHeaderImage" alt="Foto del rack" title="Clic para abrir la imagen con el visor predeterminado de Windows" />
+      </div>
+      <div class="rackSelector"><div class="rackButtons" id="rackButtons"></div></div>
+      <div class="rackTableToolbar">
+        <span id="rackTableSubtitle">Seleccione un rack para ver sus equipos</span>
+        <div class="rackTableActions">
+          <button class="addRow" id="addRackRowBtn">＋ AGREGAR FILA</button>
+          <button class="saveBtn" id="saveRackBtn">💾 GUARDAR</button>
+        </div>
+      </div>
+      <div class="rackTableWrap">
+        <table class="rackTable"><thead><tr>
+          <th>RACK</th><th>SECTOR</th><th>PATCH</th><th>SW</th><th>BOCA</th><th>MARCA</th><th>DESCRIPCIÓN</th><th>HOSTNAME</th><th>IP</th>
+        </tr></thead><tbody id="rackTableBody"></tbody></table>
       </div>
     </section>
   </main>
@@ -59,5 +73,6 @@
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="table-columns.js"></script>
+  <script src="rack-enhance.js"></script>
 </body>
 </html>
