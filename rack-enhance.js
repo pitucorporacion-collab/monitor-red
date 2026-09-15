@@ -42,12 +42,18 @@
     if (sub) sub.textContent = `${rackAllRows().length} equipos registrados${rows.length !== rackAllRows().length ? ` · ${rows.length} visibles` : ''}`;
   }
 
-  function selectRack(rack, location, button) {
+  async function selectRack(rack, location, button) {
     selectedRack = rack;
     document.querySelectorAll('.rackCard').forEach(el => el.classList.remove('selected'));
     if (button) button.classList.add('selected');
     const header = document.getElementById('selectedRackHeader');
     if (header) header.textContent = `RACK ${rack} - ${location}`;
+    const image = document.getElementById('rackHeaderImage');
+    if (image) {
+      image.removeAttribute('src'); image.classList.remove('visible');
+      const src = await window.monitorAPI.loadRackImage(rack);
+      if (src) { image.src = src; image.classList.add('visible'); image.onclick = () => window.monitorAPI.openRackImage(rack); }
+    }
     renderAllRackRows();
   }
 
