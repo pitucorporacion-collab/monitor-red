@@ -6,12 +6,39 @@ let server;
 const SHARED_RACKS_DATA_FILE = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\rack-data.json';
 const SHARED_RACKS_DIR = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\racks';
 
-function getUserDataFile() {
-  return path.join(app.getPath('userData'), 'monitor-data.json');
+function getSharedDataFile() {
+  // En el portable, PORTABLE_EXECUTABLE_DIR apunta a la carpeta desde
+  // donde se abrió el EXE. Así todos los usuarios que abran el mismo
+  // portable desde una carpeta compartida usan el mismo data.json.
+  const baseDir = process.env.PORTABLE_EXECUTABLE_DIR ||
+    (app.isPackaged ? path.dirname(process.execPath) : __dirname);
+  return path.join(baseDir, 'data.json');
+}
+
+function getBundledDataFile() {
+  return path.join(app.getAppPath(), 'data.json');
+}
+
+function ensureSharedDataFile() {
+  const sharedFile = getSharedDataFile();
+
+  if (fs.existsSync(sharedFile)) return sharedFile;
+
+  try {
+    const bundledFile = getBundledDataFile();
+    if (fs.existsSync(bundledFile)) {
+      fs.copyFileSync(bundledFile, sharedFile);
+      return sharedFile;
+    }
+  } catch (e) {
+    console.log('No se pudo crear data.json compartido:', e.message);
+  }
+
+  return sharedFile;
 }
 
 function startServer() {
-  process.env.MONITOR_USER_DATA = getUserDataFile();
+  process.env.MONITOR_USER_DATA = ensureSharedDataFile();
   server = require('./server.js');
 }
 
@@ -28,6 +55,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     }
   });
+
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('http://') || url.startsWith('https://')) {
       shell.openExternal(url);
@@ -40,7 +68,7 @@ function createWindow() {
 }
 
 ipcMain.handle('load-device-config', () => {
-  const file = getUserDataFile();
+  const file = ensureSharedDataFile();
   try {
     if (fs.existsSync(file)) return JSON.parse(fs.readFileSync(file, 'utf8'));
   } catch (e) {
@@ -50,10 +78,15 @@ ipcMain.handle('load-device-config', () => {
 });
 
 ipcMain.handle('save-device-config', (_event, config) => {
-  const file = getUserDataFile();
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, JSON.stringify(config, null, 2), 'utf8');
-  return true;
+  const file = ensureSharedDataFile();
+
+  try {
+    fs.writeFileSync(file, JSON.stringify(config, null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.log('No se pudo guardar la configuración:', e.message);
+    return false;
+  }
 });
 
 ipcMain.handle('load-rack-config', () => {
