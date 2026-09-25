@@ -5,6 +5,7 @@ const fs = require('fs');
 let server;
 const SHARED_RACKS_DATA_FILE = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\rack-data.json';
 const SHARED_RACKS_DIR = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\racks';
+const MAP_FILE = '\\\\10.3.0.220\\Grupos\\IT\\2026\\MonitorRed\\MAPA.pdn';
 
 function getSharedDataFile() {
   // En el portable, PORTABLE_EXECUTABLE_DIR apunta a la carpeta desde
@@ -85,6 +86,16 @@ ipcMain.handle('save-device-config', (_event, config) => {
     return true;
   } catch (e) {
     console.log('No se pudo guardar la configuración:', e.message);
+    return false;
+  }
+});
+
+ipcMain.handle('open-map', async () => {
+  try {
+    const result = await shell.openPath(MAP_FILE);
+    return result || true;
+  } catch (e) {
+    console.log('No se pudo abrir MAPA.pdn:', e.message);
     return false;
   }
 });
