@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld('monitorAPI', {
   loadRackConfig: () => ipcRenderer.invoke('load-rack-config'),
   saveRackConfig: (config) => ipcRenderer.invoke('save-rack-config', config),
   loadRackImage: (rack) => ipcRenderer.invoke('load-rack-image', rack),
-  openRackImage: (rack) => ipcRenderer.invoke('open-rack-image', rack)
+  openRackImage: (rack) => ipcRenderer.invoke('open-rack-image', rack),
+  openMap: () => ipcRenderer.invoke('open-map')
 });
