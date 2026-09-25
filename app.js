@@ -11,6 +11,7 @@ const offlineTotal = document.getElementById('offlineTotal');
 const lastCheck = document.getElementById('lastCheck');
 const onlyProblemsBtn = document.getElementById('onlyProblemsBtn');
 const refreshHomeBtn = document.getElementById('refreshHomeBtn');
+const mapBtn = document.getElementById('mapBtn');
 const rfidPageBtn = document.getElementById('rfidPageBtn');
 const saveBtn = document.getElementById('saveBtn');
 const addRowBtn = document.getElementById('addRowBtn');
@@ -89,7 +90,7 @@ function updateTotals(){
 
 function updateLastCheck(){
   if(!lastCheckAt){ lastCheck.textContent='ÚLTIMO PING: —'; return; }
-  lastCheck.textContent=`ÚLTIMO PING: ${lastCheckAt.toLocaleTimeString('es-AR')}`;
+  lastCheck.textContent=`ÚLTIMO PING: ${lastCheckAt.toLocaleTimeString('es-AR',{hour12:false})}`;
 }
 
 function sortedDevices(group) {
@@ -271,6 +272,7 @@ document.getElementById('backBtn').onclick=()=>{
 };
 
 refreshHomeBtn.onclick=()=>checkAll();
+mapBtn.onclick=()=>window.monitorAPI.openMap();
 
 document.getElementById('refreshBtn').onclick=()=>{
   if(currentGroup) checkGroup(currentGroup);
@@ -318,7 +320,7 @@ saveBtn.onclick=async()=>{
 
 onlyProblemsBtn.onclick=openProblems;
 
-function tick(){document.getElementById('clock').textContent=`HORA ACTUAL: ${new Date().toLocaleTimeString('es-AR')}`;}
+function tick(){document.getElementById('clock').textContent=`HORA ACTUAL: ${new Date().toLocaleTimeString('es-AR',{hour12:false})}`;}
 
 async function init(){
   await loadSavedConfig();
